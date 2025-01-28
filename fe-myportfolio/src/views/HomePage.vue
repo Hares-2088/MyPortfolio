@@ -71,7 +71,7 @@
       }
     });
 
-    useGiscus();  // This loads the Giscus comments!
+    useGiscus();  // This loads the Giscus comments widget
 
     return { projects };
   }

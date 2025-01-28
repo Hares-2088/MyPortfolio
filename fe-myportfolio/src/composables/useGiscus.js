@@ -7,7 +7,7 @@ export function useGiscus() {
     script.setAttribute('data-repo', 'Hares-2088/MyPortfolio');  // Update this
     script.setAttribute('data-repo-id', '909110904');  // Update this
     script.setAttribute('data-category', 'General');
-    script.setAttribute('data-category-id', 'your-category-id');  // Update this
+    script.setAttribute('data-category-id', 'general');  // Update this
     script.setAttribute('data-mapping', 'pathname');
     script.setAttribute('data-reactions-enabled', '1');
     script.setAttribute('data-emit-metadata', '0');
