@@ -100,6 +100,7 @@ import projectsApi from '@/api/projects'; // Adjust the import path to your API 
 import { fetchComments, addComment } from '@/api/comments'; // Import your comment API functions
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faComment } from '@fortawesome/free-solid-svg-icons';
+import { useAuth0 } from '@auth0/auth0-vue'; // Import useAuth0
 
 library.add(faComment);
 
@@ -107,6 +108,7 @@ export default {
   setup() {
     const projects = ref([]);
     const loading = ref(true);
+    const { isAuthenticated, user, loginWithRedirect, getAccessTokenSilently } = useAuth0(); // Use Auth0
 
     const toolIcons = {
       "React": ['fab', 'react'],
@@ -164,20 +166,17 @@ export default {
         return;
       }
 
-      const newComment = {
-        content: project.newComment,
-        author: user.value.name || user.value.email, // Use Auth0 user's name or email
-        project_id: project._id,
-      };
-
       try {
-        const comment = await addComment(newComment);
-        project.comments.push(comment);
+        const token = await getAccessTokenSilently(); // Get the access token
+        const commentData = { ...project.newComment, project_id: project._id };
+        const response = await addComment(commentData, token); // Pass the token to the API function
+        project.comments.push(response);
         project.newComment = '';
       } catch (error) {
         console.error('Error submitting comment:', error);
       }
     };
+
     onMounted(async () => {
       try {
         const data = await projectsApi.getProjects();
@@ -196,7 +195,7 @@ export default {
       }
     });
 
-    return { projects, loading, toolIcons, getToolIconColor, toggleComments, submitComment };
+    return { projects, loading, toolIcons, getToolIconColor, toggleComments, submitComment, isAuthenticated, user, loginWithRedirect, getAccessTokenSilently };
   },
 };
 </script>
