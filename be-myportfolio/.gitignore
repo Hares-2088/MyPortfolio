@@ -1,0 +1,41 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.so
+*.swp
+
+# Virtual environment
+venv/
+env/
+*.env
+
+# IDE and editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Logs and local database files
+*.log
+*.sqlite3
+
+# Python dependency files
+Pipfile
+Pipfile.lock
+poetry.lock
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+
+# FastAPI and Uvicorn auto-generated files
+*.pid
+
+# Deployment and build files
+.DS_Store
+*.bak
+*.tmp
+
+# Ignore environment variables and secrets
+.env
+config.pyc
+# Ignore IDE settings
