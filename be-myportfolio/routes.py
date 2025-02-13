@@ -1,19 +1,21 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from models import Project, Comment
 from typing import List
 from beanie import PydanticObjectId
+from auth import validate_token
 
 
 project_router = APIRouter()
 
+
 @project_router.get("/", response_model=List[Project])
-async def get_projects():
+async def get_projects(token: str = Depends(validate_token)):
     projects = await Project.all().to_list()
     print("DEBUG: API Retrieved Projects ->", projects)  # Debugging step
     return projects
 
 @project_router.get("/{project_id}", response_model=Project)
-async def get_project(project_id: str):
+async def get_project(project_id: str, token: str = Depends(validate_token)):
     """Retrieve a specific project by its ID."""
     project = await Project.get(project_id)
     if project:
@@ -21,14 +23,13 @@ async def get_project(project_id: str):
     raise HTTPException(status_code=404, detail="Project not found")
 
 @project_router.post("/", response_model=Project)
-async def add_project(project: Project):
+async def add_project(project: Project, token: str = Depends(validate_token)):
     """Add a new project to MongoDB."""
     new_project = await project.insert()
-    return new_project  # Now correctly returns the inserted document with MongoDB ID
-
+    return new_project
 
 @project_router.put("/{project_id}", response_model=Project)
-async def update_project(project_id: str, updated_data: Project):
+async def update_project(project_id: str, updated_data: Project, token: str = Depends(validate_token)):
     """Update an existing project."""
     project = await Project.get(project_id)
     if not project:
@@ -39,7 +40,7 @@ async def update_project(project_id: str, updated_data: Project):
     return project
 
 @project_router.delete("/{project_id}")
-async def delete_project(project_id: str):
+async def delete_project(project_id: str, token: str = Depends(validate_token)):
     """Delete a project from MongoDB."""
     project = await Project.get(project_id)
     if not project:
@@ -52,19 +53,19 @@ async def delete_project(project_id: str):
 comment_router = APIRouter()
 
 @comment_router.post("/", response_model=Comment)
-async def add_comment(comment: Comment):
+async def add_comment(comment: Comment, token: str = Depends(validate_token)):
     """Add a new comment to a project."""
     new_comment = await comment.insert()
     return new_comment
 
 @comment_router.get("/project/{project_id}", response_model=List[Comment])
-async def get_comments(project_id: PydanticObjectId):
+async def get_comments(project_id: PydanticObjectId, token: str = Depends(validate_token)):
     """Retrieve all approved comments for a specific project."""
     comments = await Comment.find({"project_id": project_id, "approved": True}).to_list()
     return comments
 
 @comment_router.put("/{comment_id}/approve", response_model=Comment)
-async def approve_comment(comment_id: PydanticObjectId):
+async def approve_comment(comment_id: PydanticObjectId, token: str = Depends(validate_token)):
     """Approve a comment."""
     comment = await Comment.get(comment_id)
     if not comment:
@@ -74,7 +75,7 @@ async def approve_comment(comment_id: PydanticObjectId):
     return comment
 
 @comment_router.delete("/{comment_id}")
-async def delete_comment(comment_id: PydanticObjectId):
+async def delete_comment(comment_id: PydanticObjectId, token: str = Depends(validate_token)):
     """Delete a comment."""
     comment = await Comment.get(comment_id)
     if not comment:

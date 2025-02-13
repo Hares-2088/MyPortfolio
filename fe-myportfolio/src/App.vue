@@ -27,6 +27,12 @@
           <router-link to="/about" class="text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
             About
           </router-link>
+          <template v-if="isAuthenticated">
+            <router-link to="/dashboard"
+              class="text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
+              Dashboard
+            </router-link>
+          </template>
         </div>
 
         <!-- Right Side: Admin Login, Language Selector, Theme Toggle -->

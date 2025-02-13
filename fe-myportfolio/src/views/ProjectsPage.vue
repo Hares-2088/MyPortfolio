@@ -71,18 +71,21 @@
               </div>
 
               <!-- Add Comment Form -->
-              <form @submit.prevent="submitComment(project)" class="mt-6">
-                <textarea v-model="project.newComment" placeholder="Add a comment..."
-                  class="w-full p-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows="3" required></textarea>
-                <input v-model="project.newCommentAuthor" placeholder="Your name"
-                  class="w-full p-2 mt-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required />
-                <button type="submit"
-                  class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
-                  Submit Comment
-                </button>
-              </form>
+              <template v-if="isAuthenticated">
+                <form @submit.prevent="submitComment(project)" class="mt-6">
+                  <textarea v-model="project.newComment" placeholder="Add a comment..."
+                    class="w-full p-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    rows="3" required></textarea>
+                  <button type="submit"
+                    class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+                    Submit Comment
+                  </button>
+                </form>
+              </template>
+              <template v-else>
+                <p class="text-gray-400 mt-6">Please <button @click="login"
+                    class="text-blue-500 hover:text-blue-700">log in</button> to add a comment.</p>
+              </template>
             </div>
           </div>
         </div>
@@ -156,22 +159,25 @@ export default {
     };
 
     const submitComment = async (project) => {
+      if (!isAuthenticated.value) {
+        loginWithRedirect(); // Redirect to Auth0 login
+        return;
+      }
+
       const newComment = {
         content: project.newComment,
-        author: project.newCommentAuthor,
-        project_id: project._id
+        author: user.value.name || user.value.email, // Use Auth0 user's name or email
+        project_id: project._id,
       };
 
       try {
         const comment = await addComment(newComment);
         project.comments.push(comment);
         project.newComment = '';
-        project.newCommentAuthor = '';
       } catch (error) {
         console.error('Error submitting comment:', error);
       }
     };
-
     onMounted(async () => {
       try {
         const data = await projectsApi.getProjects();
