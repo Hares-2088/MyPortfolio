@@ -26,7 +26,7 @@ app = FastAPI(debug=Config.DEBUG, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],  # Replace with your Vue app\'s URL
+    allow_origins=["http://localhost:8080"],  # Replace with your Vue app's URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -35,6 +35,7 @@ app.add_middleware(
 # Include project routes
 app.include_router(project_router, prefix="/projects", tags=["Projects"])
 app.include_router(comment_router, prefix="/comments", tags=["Comments"])
+
 @app.get("/")
 def home():
     return {"message": "Welcome to Adem's Portfolio API"}

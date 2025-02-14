@@ -27,7 +27,7 @@
           <router-link to="/about" class="text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
             About
           </router-link>
-          <template v-if="isAuthenticated">
+          <template v-if="isAuthenticated && isAdmin">
             <router-link to="/dashboard"
               class="text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
               Dashboard
@@ -43,6 +43,10 @@
             </button>
           </template>
           <template v-else>
+            <router-link v-if="isAdmin" to="/dashboard"
+              class="text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
+              Dashboard
+            </router-link>
             <button @click="logout" class="text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
               Logout
             </button>
@@ -112,12 +116,13 @@
 <script>
 import { useAuth0 } from '@auth0/auth0-vue'; // Import Auth0
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faBars, faMoon as fasMoon } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faMoon as fasMoon, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { faMoon as farMoon } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import 'particles.js';
+import { ref, onMounted } from "vue";
 
-library.add(faBars, fasMoon, farMoon);
+library.add(faBars, fasMoon, farMoon, faSpinner);
 
 export default {
   name: 'App',
@@ -125,7 +130,25 @@ export default {
     FontAwesomeIcon,
   },
   setup() {
-    const { loginWithRedirect, logout, user, isAuthenticated } = useAuth0(); // Use Auth0
+    const { loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently } = useAuth0(); // Use Auth0
+    const isAdmin = ref(false);
+
+    const checkAdminRole = async () => {
+      if (!isAuthenticated.value) return;
+
+      try {
+        const token = await getAccessTokenSilently();
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        const roles = payload["https://fastapi.yourdomain.com/roles"] || [];
+
+        isAdmin.value = roles.includes("admin");
+      } catch (error) {
+        console.error("Error checking admin role:", error);
+        isAdmin.value = false;
+      }
+    };
+
+    onMounted(checkAdminRole);
 
     return {
       login: () => {
@@ -136,6 +159,7 @@ export default {
       },
       user,
       isAuthenticated,
+      isAdmin,
     };
   },
   data() {

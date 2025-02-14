@@ -1,47 +1,46 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import Home from '@/views/HomePage.vue';
-import Projects from '@/views/ProjectsPage.vue';  // Import the new Projects page
-import About from '@/views/AboutPage.vue';  // Import the new About page
-import Dashboard from '@/views/Dashboard.vue';  // Import the Dashboard page
-import { useAuth0 } from '@auth0/auth0-vue';  // Import Auth0
+import { createRouter, createWebHistory } from "vue-router";
+import Home from "@/views/HomePage.vue";
+import Projects from "@/views/ProjectsPage.vue";
+import About from "@/views/AboutPage.vue";
+import AdminDashboardPage from "@/views/AdminDashboardPage.vue";
+import { useAuth0 } from "@auth0/auth0-vue";
 
 const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home
-  },
-  {
-    path: '/projects',
-    name: 'Projects',
-    component: Projects
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: About
-  },
-  {
-    path: '/dashboard',
-    name: 'Dashboard',
-    component: Dashboard
-  }
+  { path: "/", name: "Home", component: Home },
+  { path: "/projects", name: "Projects", component: Projects },
+  { path: "/about", name: "About", component: About },
+  { path: "/dashboard", name: "AdminDashboardPage", component: AdminDashboardPage, meta: { requiresAdmin: true } },
 ];
 
 const router = createRouter({
   history: createWebHistory(),
-  routes
+  routes,
 });
 
-// Navigation guard to protect routes
-router.beforeEach((to, from, next) => {
-  const { isAuthenticated, loginWithRedirect } = useAuth0();
+router.beforeEach(async (to, from, next) => {
+  const { isAuthenticated, getAccessTokenSilently } = useAuth0();
 
-  if (to.meta.requiresAuth && !isAuthenticated.value) {
-    loginWithRedirect({ appState: { targetUrl: to.fullPath } });
-  } else {
-    next();
+  if (to.meta.requiresAdmin) {
+    if (!isAuthenticated.value) {
+      return next("/");
+    }
+
+    try {
+      const token = await getAccessTokenSilently();
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      const roles = payload["https://fastapi.yourdomain.com/roles"] || [];
+
+      if (roles.includes("admin")) {
+        return next();
+      } else {
+        return next("/");
+      }
+    } catch (error) {
+      console.error("Error checking admin role:", error);
+      return next("/");
+    }
   }
+  next();
 });
 
 export default router;

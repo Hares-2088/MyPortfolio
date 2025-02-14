@@ -8,21 +8,27 @@ import { faGithub, faLinkedin, faReact, faJs, faJsSquare, faCss3Alt, faMarkdown 
 import { faEnvelope, faLeaf, faCode, faDatabase, faShieldAlt, faSearch, faBug, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { createAuth0 } from '@auth0/auth0-vue'; // Import Auth0
+import { fas } from '@fortawesome/free-solid-svg-icons'; // Import all solid icons
+
+// Add all solid icons to the library
+library.add(fas);
 
 library.add(faGithub, faLinkedin, faEnvelope, faReact, faJs, faLeaf, faJsSquare, faCss3Alt, faCode, faDatabase, faShieldAlt, faMarkdown, faSearch, faBug, faExternalLinkAlt);
 
 const app = createApp(App);
 
-// Configure Auth0
+// Configure Auth0 from .env
 app.use(
     createAuth0({
-        domain: 'dev-t0j3i4zhwgva2pgz.us.auth0.com', // Replace with your Auth0 domain
-        clientId: 'vulbkenR1ESLLfupyEH9YEJM28g8CUCJ', // Replace with your Auth0 client ID
+        domain: process.env.VUE_APP_AUTH0_DOMAIN || "dev-t0j3i4zhwgva2pgz.us.auth0.com",
+        clientId: process.env.VUE_APP_AUTH0_CLIENT_ID || "vulbkenR1ESLLfupyEH9YEJM28g8CUCJ",
         authorizationParams: {
-            redirect_uri: window.location.origin, // Redirect URI after login
+            redirect_uri: window.location.origin,
+            audience: process.env.VUE_APP_AUTH0_AUDIENCE || "http://0.0.0.0:8000",
         },
     })
 );
+
 
 app.component('font-awesome-icon', FontAwesomeIcon);
 app.use(router);
