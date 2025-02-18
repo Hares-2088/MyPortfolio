@@ -132,7 +132,7 @@
 
     <!-- Footer -->
     <footer class="text-center py-8 relative z-20">
-      <p class="text-gray-300 text-sm">&copy; 2023 Adem Bessam. All rights reserved.</p>
+      <p class="text-gray-300 text-sm">&copy; 2025 Adem Bessam. All rights reserved.</p>
       <div class="mt-4 flex justify-center space-x-6">
         <a href="https://github.com/Hares-2088" target="_blank"
           class="text-gray-300 hover:text-purple-400 transition-colors">

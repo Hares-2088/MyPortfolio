@@ -3,18 +3,10 @@ import App from './App.vue';
 import router from './router';  // Ensure router is imported
 import i18n from './i18n'; // Import the i18n instance
 import './assets/styles/main.css'; // Correct the import path
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faGithub, faLinkedin, faReact, faJs, faJsSquare, faCss3Alt, faMarkdown } from '@fortawesome/free-brands-svg-icons';
-import { faEnvelope, faLeaf, faCode, faDatabase, faShieldAlt, faSearch, faBug, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { createAuth0 } from '@auth0/auth0-vue'; // Import Auth0
-import { fas } from '@fortawesome/free-solid-svg-icons'; // Import all solid icons
 import { createPinia } from 'pinia'; // Import Pinia
-
-// Add all solid icons to the library
-library.add(fas);
-
-library.add(faGithub, faLinkedin, faEnvelope, faReact, faJs, faLeaf, faJsSquare, faCss3Alt, faCode, faDatabase, faShieldAlt, faMarkdown, faSearch, faBug, faExternalLinkAlt);
+import '@/utils/fontAwesomeIcons'; // Import the FontAwesome icons
 
 const app = createApp(App);
 

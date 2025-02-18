@@ -18,9 +18,13 @@
       <div v-else class="space-y-12 mt-8">
         <div v-for="project in projects" :key="project.id" class="grid grid-cols-1 md:grid-cols-2 gap-8">
           <!-- Left Column: Project Image -->
-          <div class="w-full h-64 md:h-80">
-            <img :src="project.image || 'https://via.placeholder.com/600x400'" :alt="project.title"
+          <div class="w-full h-64 md:h-80 relative">
+            <img :src="project.image || '/Sunset-Forrest.png'" :alt="project.title"
               class="w-full h-full object-cover rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300" />
+            <div v-if="project.image === null"
+              class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-lg">
+              <p class="text-white text-lg font-bold">Image not available</p>
+            </div>
           </div>
 
           <!-- Right Column: Project Details -->
@@ -39,8 +43,8 @@
               </a>
               <a v-if="project.live_url" :href="project.live_url" target="_blank"
                 class="text-green-500 hover:text-green-700">
-                <font-awesome-icon :icon="['fas', 'external-link-alt']" class="text-xl" />
-              </a>
+                <font-awesome-icon :icon="['fas', 'external-link-alt']" class="mr-1"
+                  :style="{ color: getToolIconColor(tool) }" /> </a>
             </div>
 
             <!-- Toggle Comments Button -->
@@ -93,45 +97,15 @@ import { ref, onMounted } from 'vue';
 import projectsApi from '@/api/projects'; // Adjust the import path to your API client
 import { fetchComments, addComment } from '@/api/comments'; // Import your comment API functions
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faComment } from '@fortawesome/free-solid-svg-icons';
+import { faComment, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import { toolIcons, getToolIconColor } from '@/utils/toolIcons'; // Adjust the import path as necessary
 
-library.add(faComment);
+library.add(faComment, faExternalLinkAlt);
 
 export default {
   setup() {
     const projects = ref([]);
     const loading = ref(true);
-
-    const toolIcons = {
-      "React": ['fab', 'react'],
-      "TypeScript": ['fab', 'js'],
-      "SpringBoot": ['fas', 'leaf'],
-      "Next.js": ['fab', 'js-square'],
-      "Tailwind CSS": ['fab', 'css3-alt'],
-      "Framer Motion": ['fas', 'code'],
-      "Sanity CMS": ['fas', 'database'],
-      "Auth.js": ['fas', 'shield-alt'],
-      "Markdown": ['fab', 'markdown'],
-      "GROQ": ['fas', 'search'],
-      "Sentry": ['fas', 'bug']
-    };
-
-    const getToolIconColor = (tool) => {
-      const colors = {
-        "React": "#61DAFB",
-        "TypeScript": "#3178C6",
-        "SpringBoot": "#6DB33F",
-        "Next.js": "#000000",
-        "Tailwind CSS": "#38B2AC",
-        "Framer Motion": "#E10098",
-        "Sanity CMS": "#F03E2F",
-        "Auth.js": "#00796B",
-        "Markdown": "#000000",
-        "GROQ": "#FF4088",
-        "Sentry": "#FB4226"
-      };
-      return colors[tool] || "#FFFFFF";
-    };
 
     const loadComments = async (project) => {
       project.commentsLoading = true;
