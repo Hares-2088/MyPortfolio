@@ -1,3 +1,4 @@
+
 export const toolIcons = {
     "React": ['fab', 'react'],
     "TypeScript": ['fab', 'js'],
@@ -82,7 +83,13 @@ export const toolIcons = {
     "Photoshop": ['fab', 'adobe'],
     "Illustrator": ['fab', 'adobe'],
     "Premiere Pro": ['fab', 'adobe'],
-    "After Effects": ['fab', 'adobe']
+    "After Effects": ['fab', 'adobe'],
+    "Javascript": ['fab', 'js'],
+    "HTML": ['fab', 'html5'],
+    "CSS": ['fab', 'css3-alt'],
+    "RaspberryPi": ['fab', 'raspberry-pi'],
+    "SQL": ['fas', 'database'],
+    "Auth0": ['fas', 'lock']
 };
 
 export const getToolIconColor = (tool) => {
@@ -148,17 +155,8 @@ export const getToolIconColor = (tool) => {
         "Cypress": "#17202C",
         "Storybook": "#FF4785",
         "Figma": "#F24E1E",
-        "Sketch": "#F7B500",
-        "Adobe XD": "#FF61F6",
-        "InVision": "#FF3366",
         "Zeplin": "#F7B500",
         "Postman": "#FF6C37",
-        "Swagger": "#85EA2D",
-        "Jira": "#0052CC",
-        "Trello": "#0079BF",
-        "Slack": "#4A154B",
-        "Discord": "#7289DA",
-        "Zoom": "#2D8CFF",
         "VS Code": "#007ACC",
         "IntelliJ IDEA": "#000000",
         "Eclipse": "#2C2255",
@@ -170,7 +168,13 @@ export const getToolIconColor = (tool) => {
         "Photoshop": "#31A8FF",
         "Illustrator": "#FF9A00",
         "Premiere Pro": "#9999FF",
-        "After Effects": "#9999FF"
+        "After Effects": "#9999FF",
+        "Javascript": "#F7DF1E",
+        "HTML": "#E34F26",
+        "CSS": "#1572B6",
+        "RaspberryPi": "#C51A4A",
+        "SQL": "#CC2927",
+        "Auth0": "#EB5424"
     };
     return colors[tool] || "#FFFFFF";
 };
