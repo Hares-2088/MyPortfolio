@@ -42,13 +42,15 @@ export default {
     },
 
     async updateProject(projectId, updatedData, token) {
+        console.log("DEBUG: Sending token for update:", token); // ✅ Log the token
+
         try {
             const response = await apiClient.put(`/projects/${projectId}`, updatedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             return response.data;
         } catch (error) {
-            console.error("Error updating project:", error);
+            console.error("Error updating project:", error.response?.data || error);
             throw error;
         }
     },

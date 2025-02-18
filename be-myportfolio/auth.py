@@ -30,10 +30,15 @@ def get_rsa_key(token):
 
 async def validate_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Manually validate JWT token and extract roles & permissions."""
+    print("DEBUG: validate_token() called")  # <--- This should always log
+
     try:
         token = credentials.credentials
+        print("DEBUG: Raw Token Received ->", token)  # <--- Log received token
+
         rsa_key = get_rsa_key(token)
         if not rsa_key:
+            print("DEBUG: No matching RSA key found!")
             raise HTTPException(status_code=401, detail="Invalid token: No matching RSA key")
 
         # Decode the JWT token
@@ -45,27 +50,27 @@ async def validate_token(credentials: HTTPAuthorizationCredentials = Depends(sec
             issuer=f"https://{AUTH0_DOMAIN}/",
         )
 
-        # Remove 'azp' validation completely
-        payload.pop("azp", None)
-
-        # ✅ Fix: Use the correct keys directly
-        roles = payload.get("https://fastapi.yourdomain.com/roles", [])
-        permissions = payload.get("permissions", [])
-
-        # Debugging logs
         print("DEBUG: Full Token Payload ->", payload)
-        print("DEBUG: Roles ->", roles)
-        print("DEBUG: Permissions ->", permissions)
+        print("DEBUG: Extracted Roles ->", payload.get(f"{AUTH0_CUSTOM_NAMESPACE}roles", []))
+        print("DEBUG: Extracted Permissions ->", payload.get("permissions", []))
 
-        return {"roles": roles, "permissions": permissions, "payload": payload}
+        return {
+            "roles": payload.get(f"{AUTH0_CUSTOM_NAMESPACE}roles", []),
+            "permissions": payload.get("permissions", []),
+            "payload": payload,
+        }
 
     except jwt.ExpiredSignatureError:
+        print("DEBUG: Token expired!")
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.exceptions.InvalidClaimError as e:
+        print(f"DEBUG: Invalid claims - {str(e)}")
         raise HTTPException(status_code=401, detail=f"Invalid claims: {str(e)}")
     except jwt.DecodeError:
+        print("DEBUG: Token signature invalid!")
         raise HTTPException(status_code=401, detail="Invalid token signature")
     except Exception as e:
+        print(f"DEBUG: General token validation error - {str(e)}")
         raise HTTPException(status_code=401, detail=f"Token validation failed: {str(e)}")
 
 def has_permission(required_permission: str):
