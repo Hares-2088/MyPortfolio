@@ -51,7 +51,7 @@
 
       <!-- Download Resume Button -->
       <div class="mt-8">
-        <a href="/resume.pdf" download="Adem_Resume.pdf"
+        <a :href="resumeLink" :download="resumeFileName"
           class="px-6 py-2 border border-teal-500 text-teal-500 rounded-md hover:bg-teal-500 hover:text-white transition duration-300">
           {{ $t('downloadResume') }}
         </a>
@@ -93,12 +93,13 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faHandshake } from '@fortawesome/free-solid-svg-icons';
 import { addComment, fetchComments } from '@/api/comments'; // Import addComment and getApprovedComments functions
 import { useAuth0 } from '@auth0/auth0-vue'; // Import useAuth0
+import { useI18n } from 'vue-i18n'; // Import useI18n
 
 library.add(faHandshake);
 
@@ -107,6 +108,7 @@ export default {
     FontAwesomeIcon,
   },
   setup() {
+    const { locale } = useI18n(); // Use useI18n to get the current locale
     const showMessage1 = ref(false); // For "Hi there"
     const showMessage2 = ref(false); // For "My name is Adem Bessam"
     const showMessage3 = ref(false); // For "I am a Full-Stack Developer"
@@ -115,6 +117,9 @@ export default {
     const newComment = ref('');
     const { isAuthenticated, user } = useAuth0(); // Use Auth0
     const approvedComments = ref([]);
+
+    const resumeLink = computed(() => locale.value === 'fr' ? '/Adem_Bessam_CV.pdf' : '/resume.pdf');
+    const resumeFileName = computed(() => locale.value === 'fr' ? 'Adem_Bessam_CV.pdf' : 'Adem_Resume.pdf');
 
     onMounted(() => {
       // Animated Text
@@ -157,7 +162,7 @@ export default {
 
     return {
       showMessage1, showMessage2, showMessage3, showButton, profileImage, handleConnectClick,
-      newComment, submitComment, isAuthenticated, user, approvedComments
+      newComment, submitComment, isAuthenticated, user, approvedComments, resumeLink, resumeFileName
     };
   },
 };
