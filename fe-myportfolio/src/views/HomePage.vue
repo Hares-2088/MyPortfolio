@@ -1,10 +1,10 @@
 <template>
   <div class="min-h-screen text-foreground pt-20 relative z-20">
-    <div class="container mx-auto py-12 text-center">
+    <div class="container mx-auto py-12 text-center px-4">
       <!-- Profile Picture -->
       <div class="flex justify-center mb-4">
         <img :src="profileImage" alt="Profile"
-          class="profile-picture rounded-full border-4 border-teal-500 shadow-lg" />
+          class="profile-picture rounded-full border-4 border-teal-500 shadow-lg w-32 h-32 md:w-48 md:h-48" />
       </div>
 
       <!-- Typewriter Text -->
@@ -16,33 +16,33 @@
 
       <!-- Name and Title -->
       <transition name="fade-up" appear>
-        <p v-if="showMessage2" class="text-5xl font-bold text-white mb-4">
+        <p v-if="showMessage2" class="text-4xl md:text-5xl font-bold text-white mb-4">
           {{ $t('myNameIs') }} <span class="text-teal-400">Adem Bessam</span>
         </p>
       </transition>
       <transition name="fade-up" appear>
         <p v-if="showMessage3" class="text-2xl font-light text-white mb-8">{{ $t('iAmA') }} {{ $t('fullStackDeveloper')
-          }}</p>
+        }}</p>
       </transition>
 
-      <!-- Skill Badges -->
-      <div class="flex justify-center space-x-4 mb-8">
-        <div class="bg-gray-800/50 backdrop-blur-md rounded-full px-4 py-2 text-sm text-white">
+      <!-- Skill Badges
+      <div class="flex justify-center space-x-4 mb-8 flex-wrap">
+        <div class="bg-gray-800/50 backdrop-blur-md rounded-full px-4 py-2 text-sm text-white mb-2">
           React
         </div>
-        <div class="bg-gray-800/50 backdrop-blur-md rounded-full px-4 py-2 text-sm text-white">
+        <div class="bg-gray-800/50 backdrop-blur-md rounded-full px-4 py-2 text-sm text-white mb-2">
           Node.js
         </div>
-        <div class="bg-gray-800/50 backdrop-blur-md rounded-full px-4 py-2 text-sm text-white">
+        <div class="bg-gray-800/50 backdrop-blur-md rounded-full px-4 py-2 text-sm text-white mb-2">
           Python
         </div>
-      </div>
+      </div> -->
 
       <!-- Let's Connect Button -->
       <div class="flex justify-center">
         <transition name="fade-up" appear>
           <button v-if="showButton" @click="handleConnectClick"
-            class="px-8 py-3 border border-transparent text-lg font-medium rounded-md text-white bg-gradient-to-r from-teal-500 to-green-500 hover:from-teal-600 hover:to-green-600 transition duration-300 flex items-center justify-center space-x-2">
+            class="px-6 py-2 md:px-8 md:py-3 border border-transparent text-lg font-medium rounded-md text-white bg-gradient-to-r from-teal-500 to-green-500 hover:from-teal-600 hover:to-green-600 transition duration-300 flex items-center justify-center space-x-2">
             <font-awesome-icon :icon="['fas', 'handshake']" class="text-xl" />
             <span>{{ $t('letsConnect') }}</span>
           </button>
@@ -57,36 +57,36 @@
         </a>
       </div>
     </div>
-  </div>
 
-  <!-- Add Comment Section -->
-  <div class="mt-12 container mx-auto px-4">
-    <h2 class="text-3xl font-bold text-white mb-4">{{ $t('leaveComment') }}</h2>
-    <form @submit.prevent="submitComment" class="mt-6">
-      <textarea v-model="newComment" :placeholder="$t('addComment')"
-        class="w-full p-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        rows="3" required></textarea>
-      <button type="submit"
-        class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
-        {{ $t('submitComment') }}
-      </button>
-    </form>
-    <div v-if="isAuthenticated" class="mt-2 text-gray-400">
-      {{ $t('commentingAs') }}: {{ user.name }}
+    <!-- Add Comment Section -->
+    <div class="mt-12 container mx-auto px-4">
+      <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">{{ $t('leaveComment') }}</h2>
+      <form @submit.prevent="submitComment" class="mt-6">
+        <textarea v-model="newComment" :placeholder="$t('addComment')"
+          class="w-full p-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          rows="3" required></textarea>
+        <button type="submit"
+          class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+          {{ $t('submitComment') }}
+        </button>
+      </form>
+      <div v-if="isAuthenticated" class="mt-2 text-gray-400">
+        {{ $t('commentingAs') }}: {{ user.name }}
+      </div>
     </div>
-  </div>
 
-  <!-- Approved Comments Section -->
-  <div class="mt-12 container mx-auto px-4">
-    <h2 class="text-3xl font-bold text-white mb-4">{{ $t('comments') }}</h2>
-    <div v-if="approvedComments.length === 0" class="text-gray-400">
-      {{ $t('noComments') }}
-    </div>
-    <div v-else>
-      <div v-for="comment in approvedComments" :key="comment.id"
-        class="bg-gray-800/50 backdrop-blur-md rounded-lg p-4 mb-4">
-        <p class="text-white"><strong>{{ comment.author }}</strong> says:</p>
-        <p class="text-gray-300">{{ comment.content }}</p>
+    <!-- Approved Comments Section -->
+    <div class="mt-12 container mx-auto px-4">
+      <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">{{ $t('comments') }}</h2>
+      <div v-if="approvedComments.length === 0" class="text-gray-400">
+        {{ $t('noComments') }}
+      </div>
+      <div v-else>
+        <div v-for="comment in approvedComments" :key="comment.id"
+          class="bg-gray-800/50 backdrop-blur-md rounded-lg p-4 mb-4">
+          <p class="text-white"><strong>{{ comment.author }}</strong> says:</p>
+          <p class="text-gray-300">{{ comment.content }}</p>
+        </div>
       </div>
     </div>
   </div>
