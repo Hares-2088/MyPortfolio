@@ -30,7 +30,7 @@ router.beforeEach(async (to, from, next) => {
       const payload = JSON.parse(atob(token.split(".")[1]));
       const roles = payload["https://fastapi.yourdomain.com/roles"] || [];
 
-      if (roles.includes("admin")) {
+      if (roles.includes("Admin")) {
         return next();
       } else {
         return next("/");

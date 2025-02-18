@@ -27,12 +27,6 @@
           <router-link to="/about" class="text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
             About
           </router-link>
-          <template v-if="isAuthenticated && isAdmin">
-            <router-link to="/dashboard"
-              class="text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
-              Dashboard
-            </router-link>
-          </template>
         </div>
 
         <!-- Right Side: Admin Login, Language Selector, Theme Toggle -->
@@ -50,7 +44,7 @@
             <button @click="logout" class="text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
               Logout
             </button>
-            <img :src="user.picture" alt="User" class="w-8 h-8 rounded-full" />
+            <img v-if="user" :src="user.picture" alt="User" class="w-8 h-8 rounded-full" />
           </template>
           <div class="relative">
             <select v-model="currentLanguage" @change="changeLanguage"
@@ -114,13 +108,14 @@
 </template>
 
 <script>
-import { useAuth0 } from '@auth0/auth0-vue'; // Import Auth0
+import { useAuthStore } from './stores/auth';
+import { useAuth0 } from '@auth0/auth0-vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faBars, faMoon as fasMoon, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { faMoon as farMoon } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import 'particles.js';
-import { ref, onMounted } from "vue";
+import { computed } from "vue";
 
 library.add(faBars, fasMoon, farMoon, faSpinner);
 
@@ -130,36 +125,16 @@ export default {
     FontAwesomeIcon,
   },
   setup() {
-    const { loginWithRedirect, logout, user, isAuthenticated, getAccessTokenSilently } = useAuth0(); // Use Auth0
-    const isAdmin = ref(false);
-
-    const checkAdminRole = async () => {
-      if (!isAuthenticated.value) return;
-
-      try {
-        const token = await getAccessTokenSilently();
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        const roles = payload["https://fastapi.yourdomain.com/roles"] || [];
-
-        isAdmin.value = roles.includes("admin");
-      } catch (error) {
-        console.error("Error checking admin role:", error);
-        isAdmin.value = false;
-      }
-    };
-
-    onMounted(checkAdminRole);
+    const authStore = useAuthStore();
+    const { loginWithRedirect, isAuthenticated, logout, user } = useAuth0();
+    const isAdmin = computed(() => authStore.hasRole('Admin'));
 
     return {
-      login: () => {
-        loginWithRedirect(); // Redirect to Auth0 login
-      },
-      logout: () => {
-        logout({ returnTo: window.location.origin }); // Logout and redirect to home
-      },
-      user,
-      isAuthenticated,
-      isAdmin,
+      login: loginWithRedirect,
+      logout: logout,
+      user: user,
+      isAuthenticated: isAuthenticated,
+      isAdmin: isAdmin,
     };
   },
   data() {
