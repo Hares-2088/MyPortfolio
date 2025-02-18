@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Create an Axios instance
 const apiClient = axios.create({
-    baseURL: "http://localhost:8000",
+    baseURL: process.env.VUE_APP_API_BASE_URL,
     headers: { "Content-Type": "application/json" },
 });
 
