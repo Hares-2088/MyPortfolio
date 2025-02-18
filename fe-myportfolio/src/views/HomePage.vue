@@ -118,7 +118,7 @@ export default {
     const { isAuthenticated, user } = useAuth0(); // Use Auth0
     const approvedComments = ref([]);
 
-    const resumeLink = computed(() => locale.value === 'fr' ? '/Adem_Bessam_CV.pdf' : '/resume.pdf');
+    const resumeLink = computed(() => locale.value === 'fr' ? '/Adem_Bessam_CV.pdf' : '/Resume.pdf');
     const resumeFileName = computed(() => locale.value === 'fr' ? 'Adem_Bessam_CV.pdf' : 'Adem_Resume.pdf');
 
     onMounted(() => {
