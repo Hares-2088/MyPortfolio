@@ -11,12 +11,8 @@
           👋 Hi! I'm Adem, a passionate software developer with expertise in both frontend and backend technologies.
           Currently studying Computer Science at Champlain College.
         </p>
-        <a
-          :href="require('@/assets/Resume.pdf').default"
-          download
-          target="_blank"
-          class="inline-flex items-center px-6 py-2 mt-6 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark"
-        >
+        <a download target="_blank"
+          class="inline-flex items-center px-6 py-2 mt-6 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark">
           {{ $t('downloadCV') }}
         </a>
       </div>

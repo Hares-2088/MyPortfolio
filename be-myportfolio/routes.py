@@ -50,15 +50,24 @@ async def delete_project(project_id: str, user: dict = Depends(has_permission("m
 comment_router = APIRouter()
 
 @comment_router.post("/", response_model=Comment)
-async def add_comment(comment: Comment, user: dict = Depends(validate_token)):
+async def add_comment(comment: Comment):
     """Add a new comment."""
-    new_comment = await comment.insert()
-    return new_comment
+    try:
+        new_comment = await comment.insert()
+        return new_comment
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @comment_router.get("/project/{project_id}", response_model=List[Comment])
 async def get_comments(project_id: PydanticObjectId):
     """Retrieve all approved comments for a specific project."""
     comments = await Comment.find({"project_id": project_id, "approved": True}).to_list()
+    return comments
+
+@comment_router.get("/", response_model=List[Comment])
+async def get_all_comments(user: dict = Depends(has_permission("manage:comments"))):
+    """Retrieve all comments, including those awaiting approval."""
+    comments = await Comment.all().to_list()
     return comments
 
 @comment_router.put("/{comment_id}/approve", response_model=Comment)

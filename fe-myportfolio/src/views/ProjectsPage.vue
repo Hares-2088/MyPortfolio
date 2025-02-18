@@ -5,15 +5,15 @@
       <h1
         class="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 drop-shadow-lg text-center"
         style="line-height: 1.5;">
-        My Digital Playground
+        {{ $t('featuredProjects') }}
       </h1>
       <!-- Subtitle with Soft Glow -->
       <p class="text-lg md:text-xl text-gray-300 mt-4 px-4 md:px-16 animate-fade-in text-center">
-        <span class="text-white font-semibold">Where ideas come to life</span> through code and creativity.
+        <span class="text-white font-semibold">{{ $t('communityFeedback') }}</span> {{ $t('whereIdeasComeToLife') }}
       </p>
       <div v-if="loading" class="text-center text-white mt-8">
         <font-awesome-icon icon="spinner" spin class="text-2xl" />
-        <p class="mt-2">Loading projects...</p>
+        <p class="mt-2">{{ $t('loadingProjects') }}</p>
       </div>
       <div v-else class="space-y-12 mt-8">
         <div v-for="project in projects" :key="project.id" class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -47,16 +47,16 @@
             <button @click="toggleComments(project)"
               class="mt-6 px-3 py-2 w-dw text-ms bg-green-700 text-white rounded-lg hover:bg-green-800 transition-colors duration-300">
               <font-awesome-icon :icon="['fas', 'comment']" class="mr-3" />
-              {{ project.showComments ? 'Hide Comments' : 'Add a Comment' }}
+              {{ project.showComments ? $t('hideComments') : $t('addComment') }}
             </button>
           </div>
 
           <!-- Comments Section (Hidden by Default) -->
           <div v-if="project.showComments" class="col-span-full mt-8">
-            <h3 class="text-2xl font-bold text-white mb-4">Comments</h3>
+            <h3 class="text-2xl font-bold text-white mb-4">{{ $t('comments') }}</h3>
             <div v-if="project.commentsLoading" class="text-center text-white">
               <font-awesome-icon icon="spinner" spin class="text-xl" />
-              <p>Loading comments...</p>
+              <p>{{ $t('loadingComments') }}</p>
             </div>
             <div v-else>
               <!-- Display Existing Comments -->
@@ -67,25 +67,19 @@
                 </div>
               </div>
               <div v-else class="text-gray-400">
-                No comments yet. Be the first to comment!
+                {{ $t('noComments') }}
               </div>
 
               <!-- Add Comment Form -->
-              <template v-if="isAuthenticated">
-                <form @submit.prevent="submitComment(project)" class="mt-6">
-                  <textarea v-model="project.newComment" placeholder="Add a comment..."
-                    class="w-full p-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows="3" required></textarea>
-                  <button type="submit"
-                    class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
-                    Submit Comment
-                  </button>
-                </form>
-              </template>
-              <template v-else>
-                <p class="text-gray-400 mt-6">Please <button @click="login"
-                    class="text-blue-500 hover:text-blue-700">log in</button> to add a comment.</p>
-              </template>
+              <form @submit.prevent="submitComment(project)" class="mt-6">
+                <textarea v-model="project.newComment" :placeholder="$t('addComment')"
+                  class="w-full p-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows="3" required></textarea>
+                <button type="submit"
+                  class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+                  {{ $t('submitComment') }}
+                </button>
+              </form>
             </div>
           </div>
         </div>
@@ -100,7 +94,6 @@ import projectsApi from '@/api/projects'; // Adjust the import path to your API 
 import { fetchComments, addComment } from '@/api/comments'; // Import your comment API functions
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faComment } from '@fortawesome/free-solid-svg-icons';
-import { useAuth0 } from '@auth0/auth0-vue'; // Import useAuth0
 
 library.add(faComment);
 
@@ -108,7 +101,6 @@ export default {
   setup() {
     const projects = ref([]);
     const loading = ref(true);
-    const { isAuthenticated, user, loginWithRedirect, getAccessTokenSilently } = useAuth0(); // Use Auth0
 
     const toolIcons = {
       "React": ['fab', 'react'],
@@ -161,15 +153,14 @@ export default {
     };
 
     const submitComment = async (project) => {
-      if (!isAuthenticated.value) {
-        loginWithRedirect(); // Redirect to Auth0 login
-        return;
-      }
-
       try {
-        const token = await getAccessTokenSilently(); // Get the access token
-        const commentData = { ...project.newComment, project_id: project._id };
-        const response = await addComment(commentData, token); // Pass the token to the API function
+        const commentData = {
+          content: project.newComment,
+          project_id: project._id,
+          author: "Anonymous", // Replace with actual author if available
+          approved: false
+        };
+        const response = await addComment(commentData); // Call addComment without token
         project.comments.push(response);
         project.newComment = '';
       } catch (error) {
@@ -186,7 +177,6 @@ export default {
           commentsLoading: false,
           showComments: false, // Add showComments flag
           newComment: '',
-          newCommentAuthor: ''
         }));
       } catch (error) {
         console.error('Error fetching projects:', error);
@@ -195,7 +185,7 @@ export default {
       }
     });
 
-    return { projects, loading, toolIcons, getToolIconColor, toggleComments, submitComment, isAuthenticated, user, loginWithRedirect, getAccessTokenSilently };
+    return { projects, loading, toolIcons, getToolIconColor, toggleComments, submitComment };
   },
 };
 </script>

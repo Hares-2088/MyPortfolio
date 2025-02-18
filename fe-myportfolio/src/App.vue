@@ -12,21 +12,21 @@
       <div class="container mx-auto flex items-center justify-between py-4 px-6">
         <!-- Logo -->
         <router-link to="/" class="text-lg font-semibold text-white hover:text-purple-400 transition-colors">
-          Adem Bessam
+          Adem's portfolio
         </router-link>
 
         <!-- Centered Links with Rounded Background -->
         <div
           class="hidden md:flex items-center space-x-4 bg-gray-800/70 backdrop-blur-md rounded-full px-6 py-2 shadow-lg">
           <router-link to="/" class="text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
-            Home
+            {{ $t('home') }}
           </router-link>
           <router-link to="/projects" class="text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
-            Projects
+            {{ $t('projects') }}
           </router-link>
-          <router-link to="/about" class="text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
-            About
-          </router-link>
+          <!-- <router-link to="/about" class="text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
+            {{ $t('about') }}
+          </router-link> -->
         </div>
 
         <!-- Right Side: Admin Login, Language Selector, Theme Toggle -->
@@ -73,11 +73,11 @@
       <div v-if="isMobileMenuOpen" class="md:hidden px-6 py-4 space-y-4 bg-gray-900/90 backdrop-blur-md">
         <router-link to="/projects"
           class="block text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
-          Projects
+          {{ $t('projects') }}
         </router-link>
         <router-link to="/about"
           class="block text-sm font-medium text-gray-300 hover:text-purple-400 transition-colors">
-          About
+          {{ $t('about') }}
         </router-link>
       </div>
     </nav>
@@ -116,6 +116,7 @@ import { faMoon as farMoon } from '@fortawesome/free-regular-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import 'particles.js';
 import { computed } from "vue";
+import { useI18n } from 'vue-i18n';
 
 library.add(faBars, fasMoon, farMoon, faSpinner);
 
@@ -128,6 +129,7 @@ export default {
     const authStore = useAuthStore();
     const { loginWithRedirect, isAuthenticated, logout, user } = useAuth0();
     const isAdmin = computed(() => authStore.hasRole('Admin'));
+    const { t, locale } = useI18n();
 
     return {
       login: loginWithRedirect,
@@ -135,6 +137,8 @@ export default {
       user: user,
       isAuthenticated: isAuthenticated,
       isAdmin: isAdmin,
+      t,
+      locale,
     };
   },
   data() {
@@ -156,8 +160,8 @@ export default {
     }
   },
   methods: {
-    changeLanguage(language) {
-      this.$i18n.locale = language;
+    changeLanguage() {
+      this.$i18n.locale = this.currentLanguage;
     },
     toggleTheme() {
       this.isDarkTheme = !this.isDarkTheme;

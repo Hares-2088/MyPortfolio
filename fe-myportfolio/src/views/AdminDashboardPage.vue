@@ -151,7 +151,8 @@ export default {
         // Fetch pending comments
         const fetchPendingComments = async () => {
             try {
-                const allComments = await fetchAllComments();
+                const token = await getAccessTokenSilently();
+                const allComments = await fetchAllComments(token);
                 pendingComments.value = allComments.filter(comment => !comment.approved);
             } catch (error) {
                 console.error("Error fetching comments:", error);
@@ -183,7 +184,8 @@ export default {
         // Fetch projects
         const fetchProjects = async () => {
             try {
-                const data = await projectsApi.getProjects(); // Use the imported projectsApi to call getProjects
+                const token = await getAccessTokenSilently();
+                const data = await projectsApi.getProjects(token);
                 projects.value = data.map(project => ({
                     ...project,
                     comments: [],
@@ -271,7 +273,8 @@ export default {
         const loadComments = async (project) => {
             project.commentsLoading = true;
             try {
-                const comments = await fetchComments(project._id);
+                const token = await getAccessTokenSilently();
+                const comments = await fetchComments(project._id, token);
                 project.comments = comments;
             } catch (error) {
                 console.error('Error loading comments:', error);

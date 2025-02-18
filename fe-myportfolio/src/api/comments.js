@@ -16,9 +16,12 @@ export const fetchComments = async (projectId) => {
     }
 };
 
-export const fetchAllComments = async () => {
+// Fetch all comments (including unapproved ones)
+export const fetchAllComments = async (token) => {
     try {
-        const response = await apiClient.get(`/comments`);
+        const response = await apiClient.get("/comments", {
+            headers: { Authorization: `Bearer ${token}` }, // Use the token passed as an argument
+        });
         return response.data;
     } catch (error) {
         console.error("Error fetching comments:", error);
@@ -26,11 +29,9 @@ export const fetchAllComments = async () => {
     }
 };
 
-export const addComment = async (comment, token) => {
+export const addComment = async (comment) => {
     try {
-        const response = await apiClient.post("/comments", comment, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await apiClient.post("/comments", comment);
         return response.data;
     } catch (error) {
         console.error("Error adding comment:", error);
