@@ -83,9 +83,9 @@
       </div>
       <div v-else>
         <div v-for="comment in approvedComments" :key="comment.id"
-          class="bg-gray-800/50 backdrop-blur-md rounded-lg p-4 mb-4">
-          <p class="text-white"><strong>{{ comment.author }}</strong> says:</p>
-          <p class="text-gray-300">{{ comment.content }}</p>
+          class="comment-container bg-gray-900/70 backdrop-blur-md rounded-lg p-6 mb-4 border border-gray-700">
+          <p class="comment-author"><strong>{{ comment.author }}</strong> says:</p>
+          <p class="comment-content">{{ comment.content }}</p>
         </div>
       </div>
     </div>
@@ -180,5 +180,27 @@ export default {
 .fade-up-leave-to {
   opacity: 0;
   transform: translateY(20px);
+}
+
+.comment-container {
+  background-color: rgba(31, 41, 55, 0.7);
+  /* gray-900 with opacity */
+  backdrop-filter: blur(10px);
+  border: 1px solid #374151;
+  /* gray-700 */
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+}
+
+.comment-author {
+  color: #4fd1c5;
+  /* teal-400 */
+  font-weight: 600;
+}
+
+.comment-content {
+  color: #d1d5db;
+  /* gray-300 */
+  margin-top: 0.5rem;
 }
 </style>
