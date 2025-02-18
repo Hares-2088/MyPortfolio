@@ -22,6 +22,7 @@
     "core-js": "^3.8.3",
     "particles.js": "^2.0.0",
     "path-browserify": "^1.0.1",
+    "pinia": "^3.0.1",
     "roboto-fontface": "*",
     "typewriter-effect": "^2.21.0",
     "vite-plugin-vuetify": "^2.0.4",
