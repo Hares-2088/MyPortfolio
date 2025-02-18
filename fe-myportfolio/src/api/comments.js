@@ -1,4 +1,15 @@
 import axios from "axios";
+import { useAuth0 } from "@auth0/auth0-vue";
+
+const getAccessToken = async () => {
+    const { getAccessTokenSilently } = useAuth0();
+    try {
+        return await getAccessTokenSilently();
+    } catch (error) {
+        console.error("Error getting access token:", error);
+        throw error;
+    }
+};
 
 // Create an Axios instance
 const apiClient = axios.create({
@@ -16,19 +27,10 @@ export const fetchComments = async (projectId) => {
     }
 };
 
-export const fetchAllComments = async () => {
+export const addComment = async (comment, projectId) => {
     try {
-        const response = await apiClient.get(`/comments`);
-        return response.data;
-    } catch (error) {
-        console.error("Error fetching comments:", error);
-        throw error;
-    }
-};
-
-export const addComment = async (comment, token) => {
-    try {
-        const response = await apiClient.post("/comments", comment, {
+        const token = await getAccessToken();
+        const response = await apiClient.post("/comments", { ...comment, project_id: projectId }, {
             headers: { Authorization: `Bearer ${token}` },
         });
         return response.data;
@@ -38,8 +40,9 @@ export const addComment = async (comment, token) => {
     }
 };
 
-export const approveComment = async (commentId, token) => {
+export const approveComment = async (commentId) => {
     try {
+        const token = await getAccessToken();
         const response = await apiClient.put(`/comments/${commentId}/approve`, {}, {
             headers: { Authorization: `Bearer ${token}` },
         });
@@ -50,8 +53,9 @@ export const approveComment = async (commentId, token) => {
     }
 };
 
-export const deleteComment = async (commentId, token) => {
+export const deleteComment = async (commentId) => {
     try {
+        const token = await getAccessToken();
         const response = await apiClient.delete(`/comments/${commentId}`, {
             headers: { Authorization: `Bearer ${token}` },
         });

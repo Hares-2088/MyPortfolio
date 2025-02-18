@@ -9,7 +9,6 @@ import { faEnvelope, faLeaf, faCode, faDatabase, faShieldAlt, faSearch, faBug, f
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { createAuth0 } from '@auth0/auth0-vue'; // Import Auth0
 import { fas } from '@fortawesome/free-solid-svg-icons'; // Import all solid icons
-import { createPinia } from 'pinia'; // Import Pinia
 
 // Add all solid icons to the library
 library.add(fas);
@@ -21,18 +20,16 @@ const app = createApp(App);
 // Configure Auth0 from .env
 app.use(
     createAuth0({
-        domain: process.env.VUE_APP_AUTH0_DOMAIN,
-        clientId: process.env.VUE_APP_AUTH0_CLIENT_ID,
+        domain: process.env.VUE_APP_AUTH0_DOMAIN || "dev-t0j3i4zhwgva2pgz.us.auth0.com",
+        clientId: process.env.VUE_APP_AUTH0_CLIENT_ID || "vulbkenR1ESLLfupyEH9YEJM28g8CUCJ",
         authorizationParams: {
             redirect_uri: window.location.origin,
-            audience: process.env.VUE_APP_AUTH0_AUDIENCE,
+            audience: process.env.VUE_APP_AUTH0_AUDIENCE || "http://0.0.0.0:8000",
         },
-        useRefreshTokens: true,
-        cacheLocation: 'localstorage',
     })
 );
 
-app.use(createPinia()); // Register Pinia
+
 app.component('font-awesome-icon', FontAwesomeIcon);
 app.use(router);
 app.use(i18n); // Register i18n

@@ -1,8 +1,20 @@
 import axios from "axios";
+import { useAuth0 } from "@auth0/auth0-vue";
+
+// Helper function to get the Auth0 access token
+const getAccessToken = async () => {
+    const { getAccessTokenSilently } = useAuth0();
+    try {
+        return await getAccessTokenSilently();
+    } catch (error) {
+        console.error("Error getting access token:", error);
+        throw error;
+    }
+};
 
 // Create an Axios instance with a base URL
 const apiClient = axios.create({
-    baseURL: process.env.VUE_APP_API_BASE_URL,
+    baseURL: process.env.VUE_APP_API_BASE_URL || "http://localhost:8000",
     headers: {
         "Content-Type": "application/json",
     },
@@ -29,8 +41,9 @@ export default {
         }
     },
 
-    async addProject(projectData, token) {
+    async addProject(projectData) {
         try {
+            const token = await getAccessToken();
             const response = await apiClient.post("/projects/", projectData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -41,8 +54,9 @@ export default {
         }
     },
 
-    async updateProject(projectId, updatedData, token) {
+    async updateProject(projectId, updatedData) {
         try {
+            const token = await getAccessToken();
             const response = await apiClient.put(`/projects/${projectId}`, updatedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -53,8 +67,9 @@ export default {
         }
     },
 
-    async deleteProject(projectId, token) {
+    async deleteProject(projectId) {
         try {
+            const token = await getAccessToken();
             const response = await apiClient.delete(`/projects/${projectId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
