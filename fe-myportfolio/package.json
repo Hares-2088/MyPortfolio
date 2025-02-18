@@ -9,10 +9,10 @@
   },
   "dependencies": {
     "@auth0/auth0-vue": "^2.4.0",
-    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
-    "@fortawesome/free-solid-svg-icons": "^5.15.3",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/vue-fontawesome": "^3.0.0-3",
     "@mdi/font": "5.9.55",
     "@shadcn/ui": "^0.0.4",
