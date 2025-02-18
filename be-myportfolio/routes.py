@@ -49,6 +49,12 @@ async def delete_project(project_id: str, user: dict = Depends(has_permission("m
 ## COMMENTS ROUTER
 comment_router = APIRouter()
 
+@comment_router.get("/", response_model=List[Comment])
+async def get_all_comments():
+    """Retrieve all comments."""
+    comments = await Comment.all().to_list()
+    return comments
+
 @comment_router.post("/", response_model=Comment)
 async def add_comment(comment: Comment, user: dict = Depends(validate_token)):
     """Add a new comment."""

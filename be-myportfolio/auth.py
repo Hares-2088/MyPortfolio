@@ -1,43 +1,72 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from jose import JWTError, jwt
-from auth0.authentication.token_verifier import TokenVerifier, AsymmetricSignatureVerifier
+import jwt
+import json  # ✅ Use Python's built-in json module
+import requests
+from jwt.algorithms import RSAAlgorithm
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
 AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN")
-AUTH0_AUDIENCE = os.getenv("AUTH0_API_IDENTIFIER")  # Fixed
-AUTH0_CUSTOM_NAMESPACE = os.getenv("AUTH0_CUSTOM_NAMESPACE")  # Namespace for roles/permissions
-ALGORITHMS = ["RS256"]
+AUTH0_AUDIENCE = os.getenv("AUTH0_API_IDENTIFIER")
+AUTH0_CUSTOM_NAMESPACE = os.getenv("AUTH0_CUSTOM_NAMESPACE")
 
 security = HTTPBearer()
 
-# Create the Auth0 token verifier
-signature_verifier = AsymmetricSignatureVerifier(f"https://{AUTH0_DOMAIN}/.well-known/jwks.json")
-token_verifier = TokenVerifier(signature_verifier=signature_verifier, issuer=f"https://{AUTH0_DOMAIN}/", audience=AUTH0_AUDIENCE)
+# Fetch Auth0 JWKS (JSON Web Key Set)
+jwks_url = f"https://{AUTH0_DOMAIN}/.well-known/jwks.json"
+jwks = requests.get(jwks_url).json()
 
+def get_rsa_key(token):
+    """Retrieve and convert the RSA key for JWT verification."""
+    header = jwt.get_unverified_header(token)
+    for key in jwks["keys"]:
+        if key["kid"] == header["kid"]:
+            # ✅ Fix: Use json.dumps() instead of jwt.json.dumps()
+            return RSAAlgorithm.from_jwk(json.dumps(key))
+    return None
 
 async def validate_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    """Validate the JWT token and extract roles & permissions."""
+    """Manually validate JWT token and extract roles & permissions."""
     try:
         token = credentials.credentials
-        payload = token_verifier.verify(token)
+        rsa_key = get_rsa_key(token)
+        if not rsa_key:
+            raise HTTPException(status_code=401, detail="Invalid token: No matching RSA key")
 
-        # Extract roles & permissions using the correct namespace
-        roles = payload.get(f"{AUTH0_CUSTOM_NAMESPACE}/roles", [])
-        permissions = payload.get(f"{AUTH0_CUSTOM_NAMESPACE}/permissions", [])
+        # Decode the JWT token
+        payload = jwt.decode(
+            token,
+            key=rsa_key,
+            algorithms=["RS256"],
+            audience=AUTH0_AUDIENCE,
+            issuer=f"https://{AUTH0_DOMAIN}/",
+        )
+
+        # Remove 'azp' validation completely
+        payload.pop("azp", None)
+
+        # ✅ Fix: Use the correct keys directly
+        roles = payload.get("https://fastapi.yourdomain.com/roles", [])
+        permissions = payload.get("permissions", [])
+
+        # Debugging logs
+        print("DEBUG: Full Token Payload ->", payload)
+        print("DEBUG: Roles ->", roles)
+        print("DEBUG: Permissions ->", permissions)
 
         return {"roles": roles, "permissions": permissions, "payload": payload}
 
-    except JWTError as e:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token has expired")
+    except jwt.exceptions.InvalidClaimError as e:
+        raise HTTPException(status_code=401, detail=f"Invalid claims: {str(e)}")
+    except jwt.DecodeError:
+        raise HTTPException(status_code=401, detail="Invalid token signature")
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Token validation failed: {str(e)}")
 
 def has_permission(required_permission: str):
     """Dependency function to check if the user has a specific permission."""
