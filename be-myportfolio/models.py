@@ -4,15 +4,19 @@ from typing import Optional
 from beanie import PydanticObjectId
 from typing import List
 
+from pydantic import BaseModel, HttpUrl
+from typing import Optional, List
+from beanie import Document, PydanticObjectId
+
 class Project(Document):
     id: Optional[PydanticObjectId] = None
-    title: str
-    description: str
-    github_url: HttpUrl
-    live_url: Optional[HttpUrl] = None
-    image: Optional[str] = None
-    featured: bool = True
-    tools: List[str] = []  # List of tools/technologies used
+    title: str  # Required
+    description: Optional[str] = None  # Optional
+    github_url: Optional[str] = None  # Optional, now a string (not HttpUrl)
+    live_url: Optional[str] = None  # Optional, now a string (not HttpUrl)
+    image: Optional[str] = None  # Optional
+    featured: bool = True  # Optional with default
+    tools: List[str] = []  # Optional with default
 
     class Settings:
         name = "projects"
@@ -29,6 +33,7 @@ class Project(Document):
                 "tools": ["Next.js", "React", "Tailwind CSS", "TypeScript"]
             }
         }
+
 
 class Comment(Document):
     id: Optional[PydanticObjectId] = None
