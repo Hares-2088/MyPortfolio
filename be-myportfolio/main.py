@@ -26,7 +26,7 @@ app = FastAPI(debug=Config.DEBUG, lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080"],  # Replace with your Vue app's URL
+    allow_origins=["*"],  # Replace with your Vue app's URL
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
