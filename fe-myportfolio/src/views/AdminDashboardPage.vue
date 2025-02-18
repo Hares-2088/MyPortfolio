@@ -9,7 +9,7 @@
                 <div v-if="pendingComments.length > 0" class="space-y-4">
                     <div v-for="comment in pendingComments" :key="comment._id" class="bg-gray-800 p-4 rounded-lg">
                         <p class="text-gray-300">{{ comment.content }} - <span class="text-gray-400">{{ comment.author
-                        }}</span></p>
+                                }}</span></p>
                         <p class="text-sm text-gray-500 mt-1">Project: {{ getProjectTitle(comment.project_id) }}</p>
                         <div class="mt-2 space-x-2">
                             <button @click="approveComment(comment._id)"

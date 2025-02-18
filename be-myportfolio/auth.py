@@ -28,6 +28,7 @@ def get_rsa_key(token):
             return RSAAlgorithm.from_jwk(json.dumps(key))
     return None
 
+
 async def validate_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Manually validate JWT token and extract roles & permissions."""
     print("DEBUG: validate_token() called")  # <--- This should always log
